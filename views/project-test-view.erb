@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="favicon.ico">
+
+    <title><%= params[:project].capitalize %> | gamma </title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/css-bootstrap/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="/css-bootstrap/offcanvas.css" rel="stylesheet">  
+  </head>
+
+  <body>
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/me.html"><%= env["rack.session"][:username] %></a>
+        </div>
+        <div style="height: 1px;" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="/projects.html">Projects</a></li>
+            <li><a href="/projects/<%= params[:project]%>"><%= params[:project].capitalize %></a></li>
+            <li class="active"><a href="/projects/<%= params[:project]%>/tests">Tests</a></li>
+            
+            <% if env["rack.session"][:access] == "admin"  %>
+              <li><a href="/users.html">Users</a></li>
+              <li><a href="/admin-panel.html">Admin Panel</a></li>
+            <% end %>
+          </ul>
+          <form method="post" action="/logout">
+            <input type="submit" value="Log Out" style="float:right; background-color:#222222; border:none; color:#FFFFFF; margin-top:16px;"/>
+          </form>
+        </div><!--/.nav-collapse -->
+      </div><!-- /.container -->
+    </div><!-- /.navbar -->
+
+    <div class="container">
+
+      <div class="row row-offcanvas row-offcanvas-right">
+
+        <div class="col-xs-12 col-sm-8">
+          <p class="pull-right visible-xs">
+            <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">Toggle nav</button>
+          </p>
+          <div class="jumbotron">
+            <h1><%= @testDetails["name"] %></h1>
+            <p><%= @testDetails["description"] %></p>
+            <h5>Last Updated or Executed: <%= @testDetails["last-updated"] %></h5>
+          </div>
+          <% if env["rack.session"][:access] == "admin" or env["rack.session"][:access] == "tester" %>
+            <p><a class="btn btn-default" href="#" role="button" style="float: right; margin-top:10px">Edit details &raquo;</a></p>
+          <% end %>
+          <div style="margin-left:20px">
+          <div class="row">
+            <div class="col-18 col-sm-18 col-lg-12">
+              <h2>Steps</h2>
+              <div style="margin-left:10px; padding: 10px; background-color:#EEEEEE; border-radius:6px">
+              <% if not @testDetails.nil? %>
+                <% @testDetails["steps"].each do |step| %>
+                  <p style="margin-left:10px;"><%= step %></p>
+                <% end %>
+              <% end %>
+            </div>
+            <% if env["rack.session"][:access] == "admin" or env["rack.session"][:access] == "tester" %>
+              <p><a class="btn btn-default" href="#" role="button" style="float: right; margin-top: 10px;">Edit details &raquo;</a></p>
+            <% end %>
+            </div><!--/span-->
+            <div class="col-18 col-sm-18 col-lg-12">
+              <h2>Latest Execution</h2>
+              <div style="margin-left:10px; padding: 10px; background-color:#EEEEEE; border-radius: 6px">
+                <% if not @testDetails["builds"][0].nil? %>
+                  <% @testDetails["builds"][-1].each do |environment_key, environment_value| %>
+                    <p><strong><%= environment_key.capitalize %>: </strong><%= environment_value %></p>
+                  <% end %>
+                <% else %>
+                    <p>This test has not yet been executed</p>
+                <% end %>
+              </div>
+              <p><a class="btn btn-default" href="#" role="button" style="float:right; margin-top:10px">View All &raquo;</a></p>
+            </div><!--/span-->
+            <!--start IF -->
+            <% if env["rack.session"][:access] == "admin" or env["rack.session"][:access] == "tester" %>
+            <div class="col-18 col-sm-18 col-lg-12">
+              <h2>Environment</h2>
+                <div style="margin-left:10px; padding: 10px; background-color:#EEEEEE; border-radius: 6px;" id="platform-container">
+                    <% @testDetails["environment"].each do |environment| %>
+                      <span class="btn btn-default" data-value="<%= environment %>" style="margin-top:2px; margin-bottom:2px"><%= environment %><a style="margin-left:10px" onclick="removePlatform(this)">X</a></span>
+                    <% end %>
+              </div>
+              <div style="margin-top:10px; float:right">
+                <form id="platformsForm" method="post" action="/api/projects/<%=params[:project]%>/tests/<%=@prefix[0].to_hash["shortname"]%>-<%= "%03d" % @testDetails["count"]%>/platforms">
+                  <input class="form-control" id="newPlatform" name="newPlatform" style="width:200px;display:inline-block; vertical-align:middle"/>
+                  <button class="btn btn-primary" style="margin-left:-5px;" onclick="addPlatform();returnFalse(event)">Add Platform</button>
+                  <input type="hidden" id="deleteID" name="deleteID" value=""/>
+                  <input type="hidden" id="platformCreateDelete" name="action" value="create"/>
+                </form>
+              </div>
+            </div><!--/span-->
+            <div class="col-18 col-sm-18 col-lg-12">
+              <h2>Execute Now</h2>
+              <form method="post" action="/api/projects/<%=params[:project]%>/tests/<%=@prefix[0].to_hash["shortname"]%>-<%= "%03d" % @testDetails["count"]%>/execution">
+                <div style="margin-left:10px; padding: 10px; background-color:#EEEEEE; border-radius: 6px">
+                <input class="form-control" name="build-number" style="width:300px; display:inline-block" placeholder="Build Number">
+                <select class="form-control" name="test-result" style="width:300px; display:inline-block">
+                  <option>Pass</option>
+                  <option>Fail</option>
+                  <option>Blocked</option>
+                  <option>Not Tested</option>
+                  <option>Deprecated</option>
+                </select>
+              </div>
+                <input type="hidden" name="action" value="create">
+                <button type="submit" class="btn btn-primary" style="margin-top:10px; float:right">Add Execution</button>
+              </form>
+            </div>
+            <% end %>
+            <!-- end if -->
+          </div><!--/row-->
+        </div>
+        </div><!--/span-->
+
+        <div class="col-xs-6 col-sm-4 sidebar-offcanvas" id="sidebar" role="navigation">
+          <% if env["rack.session"][:access] == "admin" or env["rack.session"][:access] == "tester" %>
+          <div style="margin-bottom:10px;">
+            <a class="btn btn-primary btn-block" style="display:inline-block;" href="/projects/<%=params[:project]%>/tests">New</a>
+            <!-- I don't think this is necessary anymore <a class="btn btn-primary btn-block" style="display:inline-block;">Edit</a> -->
+          </div>
+          <% end %>
+            <div class="list-group">
+              <% @perTestDetails.each do |individualTest| %>
+                <% if @testDetails["count"] == individualTest["count"].to_i %>
+                <a class="list-group-item active" href="/projects/<%= params[:project] %>/tests/<%= @prefix[0].to_hash["shortname"] %>-<%= "%03d" % individualTest["count"].to_i %>">
+                <% else %>
+                <a class="list-group-item" href="/projects/<%= params[:project] %>/tests/<%= @prefix[0].to_hash["shortname"] %>-<%= "%03d" % individualTest["count"].to_i %>">
+                <% end %>
+                  <strong><%=@prefix[0].to_hash["shortname"]%>&ndash;<%= "%03d" % individualTest["count"].to_i %></strong> &mdash; <%= individualTest["name"] %>
+                </a>
+              <% end %>
+          </div>
+        </div><!--/span-->
+      </div><!--/row-->
+
+      <hr>
+
+
+    </div><!--/.container-->
+    <script type="text/javascript">
+    function addPlatform() {
+      document.getElementById("platformCreateDelete").value = "create";
+      platformParent = document.getElementById("platform-container");
+      newInput = document.createElement('span');
+      newInput.className = "btn btn-default";
+      newInput.style = "margin-right:5px;"
+      newInput.value = document.getElementById("newPlatform").value;
+      newInput.innerHTML = document.getElementById("newPlatform").value + "<a style='margin:10px' onclick='removePlatform(this)'>X</a>";
+      platformParent.appendChild(newInput);
+    }
+
+    function removePlatform(linkID) {
+      document.getElementById("platformCreateDelete").value = "delete";
+      document.getElementById("deleteID").value = linkID.parentNode.getAttribute("data-value");
+      document.getElementById("platform-container").removeChild(linkID.parentNode);
+      document.getElementById("platformsForm").submit();
+    }
+
+    function trackExecution(){
+
+    }
+
+    function returnFalse(event) {
+      event.cancelBubble=true;
+      if(event.stopPropagation) { event.stopPropagation(); }
+      return false;
+    }
+    </script>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <!--
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="../../dist/js/bootstrap.min.js"></script>
+    <script src="offcanvas.js"></script> -->
+  </body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="favicon.ico">
+
+    <title>Users | gamma</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/css-bootstrap/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="/css-bootstrap/starter-template.css" rel="stylesheet">
+
+  </head>
+  <body>
+
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/me.html"><%= env["rack.session"][:username] %></a>
+        </div>
+        <div style="height: 1px;" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="/projects.html">Projects</a></li>
+            <li class="active"><a href="/users.html">Users</a></li>
+            <li><a href="/admin-panel.html">Admin Panel</a></li>
+          </ul>
+          <form method="post" action="/logout">
+            <input type="submit" value="Log Out" style="float:right; background-color:#222222; border:none; color:#FFFFFF; margin-top:16px;"/>
+          </form>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+
+    <div class="container">
+
+      <div class="starter-template">
+        <h1>Users and Privilages</h1>
+        <div id="user-table" style="margin-top:30px; max-width:600px; margin-left: auto; margin-right: auto;">
+		<div class="row" style="padding-top:10px; padding-bottom:10px; margin-bottom:5px; background-color:#000000; color:#FFFFFF; border-radius: 4px;">
+ 	    	<div class="col-md-5">Email Address</div>
+ 			  <div class="col-md-5">Privilage</div>
+ 			  <div class="col-md-2">Delete</div>
+ 		</div>      	
+		<% @users.each do |user| %>
+ 	    <div class="row" style="padding-top:8px; padding-bottom:8px; border: 1px solid; background-color:#F7F7F7;">
+				<div class="col-md-5 displayUserEmail" style="height:100%"><%= user["email"] %></div>
+				
+					<div class="col-md-5">
+            <select class="form-control" onchange="updateUserPrivilege(this)">
+            <% if user["privilege"] == "admin" %>
+              <option selected>admin</option><option>tester</option><option>read-only</option>
+				    <% elsif user["privilege"] == "tester" %>
+					   <option>admin</option><option selected>tester</option><option>read-only</option>
+				    <% else %>
+					   <option>admin</option><option>tester</option><option selected>read-only</option>
+				    <% end %>
+            </select>
+          </div>
+				<div class="col-md-2"><!--<div id="deleteUser" onclick="removeUser(this)">X</div>--><button class="btn btn-primary" onclick="removeUser(this)">X</button></div>
+			</div>
+		<% end %>
+      <!-- THIS CAN BE DELETED? ALL ACTIONS ARE IMMEDIATE
+      </div>
+        <div style="width:200px; margin-left: auto; margin-right: auto; margin-top: 20px;">
+          <button class="btn btn-primary btn-block" id="saveButton" type="submit" disabled=true>Save Changes</button>
+        </div>
+      </div>
+    -->
+
+    </div><!-- /.container -->
+    <form id="userAndAction" method="post" action="/api/users">
+      <input type="hidden" name="action" id="action" value="delete"/>
+      <input type="hidden" name="user" id="user" value=""/>
+      <input type="hidden" name="privilege" id="privilege" value=""/>
+    </form>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <!--
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="../../dist/js/bootstrap.min.js"></script>
+    -->
+    <script type="text/javascript">
+    /*function enableSaveButton() {
+      document.getElementById('saveButton').disabled = false;
+    }*/
+    function updateUserPrivilege(userRow){
+      parent = userRow.parentNode.parentNode;
+      userToUpdate = parent.getElementsByClassName("displayUserEmail")[0].innerHTML;
+      privilege = userRow.value;
+      //debugger;
+      document.getElementById("user").value = userToUpdate;
+      document.getElementById("action").value = "update";
+      document.getElementById("privilege").value = privilege;
+      document.getElementById("userAndAction").submit();
+    }
+
+    function removeUser(rowToRemove) {
+      parent = rowToRemove.parentNode.parentNode;
+      userToDelete = parent.getElementsByClassName("displayUserEmail")[0].innerHTML;
+      document.getElementById("user").value = userToDelete;
+      document.getElementById("action").value = "delete";
+      document.getElementById("privilege").value = "";
+      document.getElementById("userAndAction").submit();
+
+    }
+
+    function returnFalse(event) {
+        event.cancelBubble=true;
+        if(event.stopPropagation) { event.stopPropagation(); }
+        return false;
+    }
+
+    </script>
+  </body>
+</html>

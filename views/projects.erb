@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="favicon.ico">
+
+    <title>Projects | gamma</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/css-bootstrap/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="/css-bootstrap/starter-template.css" rel="stylesheet">
+  </head>
+  <body>
+
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/me.html"><%= env["rack.session"][:username] %></a>
+        </div>
+        <div style="height: 1px;" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="/projects.html">Projects</a></li>
+            <% if env["rack.session"][:access] == "admin"  %>
+              <li><a href="/users.html">Users</a></li>
+              <li><a href="/admin-panel.html">Admin Panel</a></li>
+            <% end %>
+          </ul>
+          <form method="post" action="/logout">
+            <input type="submit" value="Log Out" style="float:right; background-color:#222222; border:none; color:#FFFFFF; margin-top:16px;"/>
+          </form>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+
+    <div class="container">
+
+      <div class="starter-template">
+      <h1>Please select a project to begin</h1>
+      	<div id="button_contain" style="margin-top:50px; max-width:400px; margin-right:auto; margin-left: auto;">
+      		<% @projects.each do |project| %>
+            <a class="btn btn-lg btn-primary btn-block" href='/projects/<%= project["project"].downcase %>'><%= project["project"] %></a>
+      		<% end %>	
+        </div>
+      </div>
+    </div><!-- /.container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <!--
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="../../dist/js/bootstrap.min.js"></script>
+  -->
+  </body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css-bootstrap/signin.css">
+    <link rel="stylesheet" href="/css-bootstrap/bootstrap.min.css">
+    <title>Sign In | gamma </title>
+  </head>
+
+  <body style="background-color:#BBB;">
+
+    <div class="container">
+      <div id="branding" style="text-align:center">
+        <h2 style="font-size:150px; margin-bottom:30px;"><a href="https://www.github.com/at1as" style="text-decoration:none;">&gamma;</a></h2> <!--make this a link to github project-->
+      </div>
+      <form class="form-signin" role="form" method="post">
+        <% if @passwordFail == true %>
+		<div style="margin-left: auto; margin-right: auto; color:red; text-align:center; margin-bottom:15px;">
+			Incorrect Email and Password Combination. Please try again.
+		</div>
+	<% end %>
+	<% if @resetSent == true %>
+		<div style="margin-left: auto; margin-right: auto; color:red; text-align:center; margin-bottom:15px;">
+             		Hang tight while we sent you your new password. Check your email!
+		</div>
+	<% end %>
+	<input type="email" name="username" class="form-control" placeholder="Email Address" required autofocus>
+        <input type="password" name="password" class="form-control" placeholder="Password" required>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        <div style="padding-top:20px;">
+          <div style="text-align:center;">
+            <a href="password-reset.html">Forgot Password</a>  
+          </div>
+        </div>
+      </form>
+    </div> 
+    <!-- /container -->
+
+  </body>
+</html>

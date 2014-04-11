@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="favicon.ico">
+
+    <title>Projects | gamma</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/css-bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="/css-general/generic-css.css" rel="stylesheet">
+    <link href="/css-bootstrap/starter-template.css" rel="stylesheet">
+  </head>
+
+  <body>
+<div>
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/me.html"><%= env["rack.session"][:username] %></a>
+        </div>
+        <div style="height: 1px;" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="/projects.html">Projects</a></li>
+            <li><a href="/users.html">Users</a></li>
+            <li class="active"><a href="/admin-panel.html">Admin Panel</a></li>
+          </ul>
+          <form method="post" action="/logout">
+            <input type="submit" value="Log Out" style="float:right; background-color:#222222; border:none; color:#FFFFFF; margin-top:16px;"/>
+          </form>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+
+    <div class="container">
+
+      <div class="starter-template">
+        <h1>Please select one of the following actions</h1>
+
+        <div style="width:240px; margin-left: auto; margin-right: auto; margin-top: 40px;">
+          <button class="btn btn-lg btn-primary btn-block" type="submit" onclick="createProjectModal()">Create New Project</button>
+        </div>
+        <div style="width:240px; margin-left: auto; margin-right: auto; margin-top: 10px;">
+          <button class="btn btn-lg btn-primary btn-block" id="newUserButton" type="submit" onclick="createUserModal()">Create New User</button>
+        </div>
+        <div style="width:240px; margin-left: auto; margin-right: auto; margin-top: 40px;">
+          <button class="btn btn-lg btn-block btn-default" id="newUserButton" type="submit" onclick="deleteProjectModal()">Delete Project</button>
+        </div>
+
+      </div>
+    </div><!-- /.container -->
+</div>
+<div>
+    <!-- MODAL GRAY BACKGROUND -->
+    <div id="dialog-background-blur" style="visibility:hidden" onclick="modalHideAll()"></div>
+    <!-- ADD NEW USER MODAL -->
+    <div id="dialog-addNewUser" class="modal-post" style="visibility:hidden;">
+      <p style="font-size:20px; margin-top:0px"><strong>Create a New User:</strong></p>
+        <div style="display:inline-block;width:100%">
+          <form method="post" action="/api/users">
+            <br/><strong>Email:</strong>
+            <input class="form-control" type="email" name="createUserEmail" placeholder="valid email address" style="width:100%" autofocus/>
+            <br/><strong>Password:</strong>
+            <input class="form-control" type="password" name="createUserPwd" placeholder="password" style="width:100%"/>
+            <br/><strong>Access Rights:</strong>
+            <select class="form-control" id="createUserPrivilege" name="createUserPrivilege" style="float:right;">
+              <option>admin</option>
+              <option selected>tester</option>
+              <option>read-only</option>
+          </select>
+          <br/><br/><br/><br/>
+          <input class="btn btn-block btn-primary" type="submit" value="Make It So" style="margin-left:auto; margin-right:auto;"/>
+          <input type="hidden" name="action" value="create"/>
+          </form>
+        </div>
+    </div>
+    <!-- CREATE NEW PROJECT MODAL -->
+    <div id="dialog-addNewProject" class="modal-post" style="visibility:hidden;">
+      <p style="font-size:20px; margin-top:0px"><strong>Create a Project:</strong></p>
+        <div style="display:inline-block;width:100%">
+          <form method="post" action="/api/projects">
+            <br/><strong>Project Name:</strong>
+            <input class="form-control" name="createProjectName" placeholder="unique name" style="width:100%" autofocus/>
+            <br/><strong>Project Code:</strong>
+            <input class="form-control" name="createProjectCode" placeholder="unique code" style="width:100%" onclick/>
+            <p style="font-size:10px; text-align:center"> The project code will be assigned to your test cases ex. "<b>XYZ</b>-001", "<b>XYZ</b>-002"</p>
+            <br/>
+            <input class="btn btn-block btn-primary" type="submit" value="Make It So" style="margin-left:auto; margin-right:auto;"/>
+            <input type="hidden" name="action" value="create"/>
+          </form>
+        </div>
+    </div>
+    <!-- DELETE EXISTING PROJECT MODAL -->
+    <div id="dialog-deleteProject" class="modal-post" style="visibility:hidden;">
+      <p style="font-size:20px; margin-top:0px"><strong>Select Project to Delete:</strong></p>
+        <div style="display:inline-block;width:100%">
+          <form method="post" action="/api/projects">
+            <select id="projectToDelete" name="projectToDelete" class="form-control">
+              <% @projects.each do |project| %>
+                <option><%= project["project"] %></option>
+              <% end %>
+            </select>
+            <div style="margin-top:20px;">
+              <input class="btn btn-block btn-primary" type="submit" value="Make It So" style="margin-left:auto; margin-right:auto;"/>
+            </div>
+          <input type="hidden" name="action" value="delete"/>
+          </form>
+        </div>
+    </div>  
+</div>
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <!--
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="../../dist/js/bootstrap.min.js"></script>
+    -->
+    <script type="text/javascript">
+    function createUserModal() {
+      document.getElementById("dialog-background-blur").style.visibility = "visible";
+      document.getElementById("dialog-addNewUser").style.visibility = "visible";
+    }
+
+    function createProjectModal() {
+      document.getElementById("dialog-background-blur").style.visibility = "visible";
+      document.getElementById("dialog-addNewProject").style.visibility = "visible";
+    }
+
+    function deleteProjectModal() {
+      document.getElementById("dialog-background-blur").style.visibility = "visible";
+      document.getElementById("dialog-deleteProject").style.visibility = "visible";
+    }
+
+    function modalHideAll() {
+      document.getElementById("dialog-background-blur").style.visibility = "hidden";
+      document.getElementById("dialog-addNewUser").style.visibility = "hidden";
+      document.getElementById("dialog-addNewProject").style.visibility = "hidden";
+      document.getElementById("dialog-deleteProject").style.visibility = "hidden";
+    }
+    </script>
+  </body>
+</html>

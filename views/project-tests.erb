@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="favicon.ico">
+
+    <title><%= params[:project].capitalize %> | gamma </title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/css-bootstrap/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="/css-bootstrap/offcanvas.css" rel="stylesheet">  
+  </head>
+
+  <body>
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/me.html"><%= env["rack.session"][:username] %></a>
+        </div>
+        <div style="height: 1px;" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="/projects.html">Projects</a></li>
+            <li><a href="/projects/<%= params[:project]%>"><%= params[:project].capitalize %></a></li>
+            <li class="active"><a href="/<%= params[:project]%>/tests">Tests</a></li>
+            
+            <% if env["rack.session"][:access] == "admin"  %>
+              <li><a href="/users.html">Users</a></li>
+              <li><a href="/admin-panel.html">Admin Panel</a></li>
+            <% end %>
+          </ul>
+          <form method="post" action="/logout">
+            <input type="submit" value="Log Out" style="float:right; background-color:#222222; border:none; color:#FFFFFF; margin-top:16px;"/>
+          </form>
+        </div><!--/.nav-collapse -->
+      </div><!-- /.container -->
+    </div><!-- /.navbar -->
+
+    <div class="container">
+
+      <div class="row row-offcanvas row-offcanvas-right">
+        <form method="post" action="/api/projects/<%=params[:project]%>/tests">
+        <div class="col-xs-12 col-sm-8">
+          <p class="pull-right visible-xs">
+            <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">Toggle nav</button>
+          </p>
+          <div class="jumbotron">
+            <h1><textarea style="min-width:100%; max-width:100%; min-height:100px;" name="testname" placeholder=" Test Name" required></textarea></h1>
+            <p><textarea style="min-width:100%; max-width:100%; min-height:140px;" name="testdescription" placeholder=" Test Description" required></textarea></p>
+          </div>
+          <div class="row">
+            <div class="col-18 col-sm-18 col-lg-12">
+              <h2>Steps</h2>
+              <div style="margin-left:10px; padding: 10px; background-color:#EEEEEE; border-radius:6px" id="step-container">
+              <div id="step1-parent">
+              <textarea style="min-width:94%; max-width:94%; min-height:40px" placeholder=" Step 1" id="step1" name="step1"></textarea>
+              <a class="btn btn-default" style="display:inline-block; min-width:5%; max-width:5%; float:right; margin-top:5px;" onclick="removeAnotherStep(this.id)" id="remove-step1">X</a>
+            </div>
+            <input type="hidden" id="totalSteps" name="totalSteps" value="1"/>
+            </div>
+            </div>
+            <div class="btn btn-primary" style="float:right; margin-right:15px; margin-top:10px;" onclick="addStep()">Add Step</div>
+            </div><!--/span-->
+            <!--
+            <div class="row">
+            <div class="col-18 col-sm-18 col-lg-12">
+              <h2>Environment</h2>
+              <div style="margin-left:10px; padding: 10px; background-color:#EEEEEE; border-radius: 6px; visibility:hidden;" id="platform-container">
+              </div>
+              <div style="margin-top:10px; float:right">
+                <input class="form-control" id="newPlatform" name="newPlatform" style="width:200px;display:inline-block; vertical-align:middle"/>
+                  <div class="btn btn-primary" style="margin-left:-5px;" onclick="addPlatform()">Add Platform</div>
+                  <input type="hidden" id="deleteID" name="deleteID" value=""/>
+              </div>
+            </div>
+          </div> --><!--/row-->
+          <hr>
+          <div style="float:left; width:150px;">
+            <button class="btn btn-primary btn-block" style="margin-bottom:15px;" type="submit">Create</button>
+          </div>
+        </form>
+        </div>
+
+        
+
+        <div class="col-xs-6 col-sm-4 sidebar-offcanvas" id="sidebar" role="navigation">
+            <div class="list-group">
+              <% @perTestDetails.each do |individualTest| %>
+                <a class="list-group-item" href="/projects/<%= params[:project] %>/tests/<%= @prefix[0].to_hash["shortname"] %>-<%= "%03d" % individualTest["count"].to_i %>">
+                  <strong><%=@prefix[0].to_hash["shortname"] %>&ndash;<%= "%03d" % individualTest["count"].to_i %></strong> &mdash; <%= individualTest["name"] %>
+                </a>
+              <% end %>
+
+          </div>
+        </div><!--/span-->
+      </div><!--/row-->
+
+
+
+
+    </div><!--/.container-->
+
+    <script type="text/javascript">
+
+    var platformCount = 0
+    function addPlatform() {
+      platformCount += 1;
+      platformParent = document.getElementById("platform-container");
+      newInput = document.createElement('span');
+      newInput.className = "btn btn-default";
+      newInput.name = "platform" + platformCount;
+      newInput.id = "platform" + platformCount;
+      newInput.style = "margin-right:5px;";
+      newInput.value = document.getElementById("newPlatform").value;
+      newInput.innerHTML = document.getElementById("newPlatform").value + "<a style='margin:10px; text-align:center' onclick='removePlatform(this)'>X</a>";
+      platformParent.appendChild(newInput);
+      document.getElementById("platform-container").style.visibility = "visible";
+      document.getElementById("newPlatform").value = "";
+    }
+
+    function removePlatform(linkID) {
+      document.getElementById("deleteID").value = linkID.parentNode.getAttribute("data-value");
+      document.getElementById("platform-container").removeChild(linkID.parentNode);
+    }
+
+    var totalSteps = 1;
+    function addStep() {
+      totalSteps += 1;
+      stepContainer = document.getElementById("step-container");
+      newStep = document.createElement('textarea');
+      newStep.placeholder = " Step " + totalSteps;
+      newStep.style = "min-width:94%; max-width:94%; min-height:40px;"
+      newStep.name = "step" + totalSteps;
+      newStep.id = "step" + totalSteps;
+      removeStep = document.createElement('span');
+      removeStep.className = "btn btn-default";
+      removeStep.style = "display:inline-block; min-width:5%; max-width:5%; float:right; margin-top:5px;";
+      removeStep.innerHTML = "X";
+      removeStep.id = "remove-step" + totalSteps
+      removeStep.setAttribute("onclick", "removeAnotherStep(this.id);");
+      newStepDiv = document.createElement('div');
+      newStepDiv.id = "step" + totalSteps + "-parent";
+      newStepDiv.appendChild(newStep);
+      newStepDiv.appendChild(removeStep);
+      stepContainer.appendChild(newStepDiv);
+      document.getElementById("totalSteps").value = totalSteps;
+    }
+
+    function removeAnotherStep(theTest){
+      stepParentDiv = document.getElementById(theTest).parentNode;
+      document.getElementById("step-container").removeChild(stepParentDiv);
+    }
+
+    </script>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <!--
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="../../dist/js/bootstrap.min.js"></script>
+    <script src="offcanvas.js"></script> -->
+  </body>
+</html>

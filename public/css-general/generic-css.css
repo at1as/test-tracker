@@ -1,0 +1,55 @@
+body{
+	
+}
+#dialog-background-blur{
+    background-color: #EEEEEE;
+    opacity: 0.85;
+    position: fixed;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
+    z-index: 5;
+}
+
+#dialog-addNewUser{
+	background-color: #CCCCCC;
+    opacity:1.0;
+    position: fixed;
+    top: 25%;
+    left: 50% ;
+    width:280px;
+    margin-left:-140px;
+    padding:20px;
+    box-shadow: 2px 1px 1px #DDDDDD;
+    z-index:11;
+    border-radius:5px;
+}
+
+#dialog-addNewProject{
+	background-color: #CCCCCC;
+    opacity:1.0;
+    position: fixed;
+    top: 25%;
+    left: 50% ;
+    width:280px;
+    margin-left:-140px;
+    padding:20px;
+    box-shadow: 2px 1px 1px #DDDDDD;
+    z-index:11;
+    border-radius:5px;
+}
+
+#dialog-deleteProject{
+	background-color: #CCCCCC;
+    opacity:1.0;
+    position: fixed;
+    top: 25%;
+    left: 50% ;
+    width:280px;
+    margin-left:-140px;
+    padding:20px;
+    box-shadow: 2px 1px 1px #DDDDDD;
+    z-index:11;
+    border-radius:5px;
+}
