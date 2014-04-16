@@ -6,11 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <script type="text/javascript" src="/scripts/session_timeout.js"></script>
 
     <title>Projects | gamma</title>
 
-    <!-- Bootstrap core CSS -->
+    <!-- Bootstrap CSS -->
     <link href="/css-bootstrap/bootstrap.min.css" rel="stylesheet">
     <link href="/css-general/generic-css.css" rel="stylesheet">
     <link href="/css-bootstrap/starter-template.css" rel="stylesheet">
@@ -113,18 +114,12 @@
             <div style="margin-top:20px;">
               <input class="btn btn-block btn-primary" type="submit" value="Make It So" style="margin-left:auto; margin-right:auto;"/>
             </div>
-          <input type="hidden" name="action" value="delete"/>
+            <input type="hidden" name="action" value="delete"/>
           </form>
         </div>
-    </div>  
-</div>
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <!--
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script src="../../dist/js/bootstrap.min.js"></script>
-    -->
+      </div>  
+    </div>
+
     <script type="text/javascript">
     function createUserModal() {
       document.getElementById("dialog-background-blur").style.visibility = "visible";

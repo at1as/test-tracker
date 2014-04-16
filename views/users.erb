@@ -6,15 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <script type="text/javascript" src="/scripts/session_timeout.js"></script>
 
     <title>Users | gamma</title>
 
-    <!-- Bootstrap core CSS -->
+    <!-- Bootstrap CSS -->
     <link href="/css-bootstrap/bootstrap.min.css" rel="stylesheet">
-    <!-- Custom styles for this template -->
     <link href="/css-bootstrap/starter-template.css" rel="stylesheet">
-
   </head>
   <body>
 
@@ -67,16 +66,9 @@
 				    <% end %>
             </select>
           </div>
-				<div class="col-md-2"><!--<div id="deleteUser" onclick="removeUser(this)">X</div>--><button class="btn btn-primary" onclick="removeUser(this)">X</button></div>
+				<div class="col-md-2"><button class="btn btn-primary" onclick="removeUser(this)">X</button></div>
 			</div>
 		<% end %>
-      <!-- THIS CAN BE DELETED? ALL ACTIONS ARE IMMEDIATE
-      </div>
-        <div style="width:200px; margin-left: auto; margin-right: auto; margin-top: 20px;">
-          <button class="btn btn-primary btn-block" id="saveButton" type="submit" disabled=true>Save Changes</button>
-        </div>
-      </div>
-    -->
 
     </div><!-- /.container -->
     <form id="userAndAction" method="post" action="/api/users">
@@ -85,17 +77,8 @@
       <input type="hidden" name="privilege" id="privilege" value=""/>
     </form>
 
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <!--
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script src="../../dist/js/bootstrap.min.js"></script>
-    -->
     <script type="text/javascript">
-    /*function enableSaveButton() {
-      document.getElementById('saveButton').disabled = false;
-    }*/
+
     function updateUserPrivilege(userRow){
       parent = userRow.parentNode.parentNode;
       userToUpdate = parent.getElementsByClassName("displayUserEmail")[0].innerHTML;
@@ -114,7 +97,6 @@
       document.getElementById("action").value = "delete";
       document.getElementById("privilege").value = "";
       document.getElementById("userAndAction").submit();
-
     }
 
     function returnFalse(event) {
