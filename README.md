@@ -12,18 +12,17 @@ gamma divides users into three privileges: "Read-Only", "Admin" and "Tester". Th
 
 ## Usage
 
-Download the reposity here and launch gamma via
+Download the reposity here and launch the setup script:
+
+    $./setup.rb
+    
+This will launch mongo, and create the gamma database with the admin user. Please ensure your system has mongodb installed prior to running. This script only needs to be run once.
+
+Next, launch the program!
 
     $./gamma.rb
 
-At the moment, mongo isn't packaged in the build, so mongo will need be launched from your system (for Mac OS enter into the command prompt /usr/local/bin/mongo). You will then need to create a database entitled 'gamma' with two collections 'users' and 'projects'.
-
-Since no user exists by default, from the mongo prompt, enter:
-
-	$use gamma
-	$db.user.insert( { "email" : "<valid email address>", "privilege" : "admin", "password" : "<password>"})
-
-This will create an admin user with which you can use to log in and access all of gamma's features.
+Navigate to localhost:4567 and log in with the default credentials created by setup.rb. Ctrl+C will end the program, and the contents of the database will be preserved for the next time the program is launched.
 
 
 ## Dependencies
@@ -32,11 +31,12 @@ Requires a ruby installation (built and tested with 2.0) with the following Gems
 - 'sinatra' (the webserver)
 - 'mongo' (the database)
 
+This also requires that your system has mongodb installed (this is done easily with yum or apt-get on linux, or homebrew on Mac OS).
+
 
 ## TODO
 
-* Include a database with the appropriate structure
 * Add ability to Edit test cases
 * Add test import between projects
 * Add ability to include attachments
-* Add ability to delete test cases
+* Add ability to delete test cases (and/or render them inactive)
