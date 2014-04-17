@@ -18,6 +18,10 @@ helpers do
 end
 
 configure do
+	@processes = []
+	launch_cmd = 'mongod --dbpath ./db'
+	@processes << spawn(launch_cmd, :out => '/dev/null')
+	sleep 1
 	DB = Mongo::Connection.new.db("gamma", :pool_size => 5, :timeout => 5)
 	$gammaUsers = DB.collection("users")
 	$gammaProjects = DB.collection("projects")
