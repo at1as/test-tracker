@@ -32,11 +32,11 @@ def admin
 end
 
 def tester		#returns valid for tester and any user with greater than tester rights (as a superset)
-	return (env["rack.session"][:access] == "admin" or env["rack.session"][:access] == "tester")
+	return (env["rack.session"][:access] == "admin" || env["rack.session"][:access] == "tester")
 end
 
 def readonly	#returns valid for readonly and any user with greater than readonly rights (as a superset)
-	return (env["rack.session"][:access] == "admin" or env["rack.session"][:access] == "tester" or env["rack.session"][:access] == "read-only")
+	return (env["rack.session"][:access] == "admin" || env["rack.session"][:access] == "tester" || env["rack.session"][:access] == "read-only")
 end
 
 get '/?' do
@@ -191,7 +191,7 @@ end
 post '/api/projects' do
 	if readonly
 		if params[:action] == "create"
-			if $gammaProjects.find(:project => params[:createProjectName].capitalize ).to_a.length > 0 or $gammaProjects.find(:shortname => params[:createProjectCode].upcase).to_a.length > 0
+			if $gammaProjects.find(:project => params[:createProjectName].capitalize ).to_a.length > 0 || $gammaProjects.find(:shortname => params[:createProjectCode].upcase).to_a.length > 0
 				#todo: notify front end that project name already exists
 				puts "duplicate!"
 			else
